@@ -21,7 +21,16 @@ function mutationTestOutput(string $fixture): string
         ['COLUMNS' => 80, 'XDEBUG_MODE' => 'coverage', 'PEST_PLUGIN_INTERNAL_TEST_SUITE' => 1, 'PARATEST' => false],
     );
 
-    $process->run();
+    // Snapshot subprocesses share Pest's coverage report path.
+    $lock = fopen(__DIR__.'/../.temp/mutation-snapshots.lock', 'c');
+    flock($lock, LOCK_EX);
+
+    try {
+        $process->run();
+    } finally {
+        flock($lock, LOCK_UN);
+        fclose($lock);
+    }
 
     return (string) preg_replace([
         '#\x1b[[][^A-Za-z]*[A-Za-z]#', // colors
