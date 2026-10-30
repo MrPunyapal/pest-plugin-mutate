@@ -5,6 +5,9 @@ on: ['push', 'pull_request']
 permissions:
   contents: read
 
+env:
+  COMPOSER_ROOT_VERSION: 5.x-dev
+
 jobs:
   ci:
     runs-on: ${{ matrix.os }}
